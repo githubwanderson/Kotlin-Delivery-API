@@ -21,7 +21,7 @@ class UserController(private val userService: UserService) {
     }
 
     @PostMapping
-    fun create(@RequestBody dto: UserRequestDTO): ResponseEntity<UserResponseDTO> {
+    fun create(@Valid @RequestBody dto: UserRequestDTO): ResponseEntity<UserResponseDTO> {
         val createdUser = userService.create(dto)
         return ResponseEntity.status(HttpStatus.CREATED).body(createdUser)
     }

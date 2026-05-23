@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletRequest
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 
@@ -24,6 +25,24 @@ class GlobalExceptionHandler {
         )
         return ResponseEntity.status(HttpStatus.CONFLICT).body(body)
     }
+
+    @ExceptionHandler(MethodArgumentNotValidException::class)
+    fun handleValidationException(
+        ex: MethodArgumentNotValidException,
+        request: HttpServletRequest
+    ): ResponseEntity<ErrorResponseDTO> {
+        val errors = ex.bindingResult.fieldErrors.joinToString("; ") { "${it.field}: ${it.defaultMessage}" }
+
+        val body = ErrorResponseDTO(
+            status = HttpStatus.BAD_REQUEST.value(),
+            error = "Bad Request",
+            message = errors,
+            path = request.requestURI
+        )
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body)
+    }
+
 
     @ExceptionHandler(Exception::class)
     fun handleGenericException(
