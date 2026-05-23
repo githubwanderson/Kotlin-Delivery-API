@@ -19,6 +19,17 @@ data class UserRequestDTO(
     val password: String
 )
 
+data class UserPatchDTO(
+    @field:Size(min = 3, max = 255, message = "Name must be between 3 and 255")
+    val name: String? = null,
+
+    @field:Email(message = "The email is not valid")
+    val email: String? = null,
+
+    @field:Size(min = 8, max = 255, message = "Password must be between 3 and 255")
+    val password: String? = null
+)
+
 data class UserResponseDTO(
     val id: Long?,
     val name: String,

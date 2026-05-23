@@ -1,5 +1,6 @@
 package com.wanderson.taskmanager.service
 
+import com.wanderson.taskmanager.dto.UserPatchDTO
 import com.wanderson.taskmanager.dto.UserRequestDTO
 import com.wanderson.taskmanager.dto.UserResponseDTO
 import com.wanderson.taskmanager.entity.User
@@ -45,5 +46,21 @@ class UserService(private val userRepository: UserRepository) {
         return UserResponseDTO(user.id, user.name, user.email, user.active)
     }
 
+    fun patch(id: Long, dto: UserPatchDTO): UserResponseDTO {
+        val user = userRepository.findById(id).orElseThrow { ResourceNotFoundException("User not found") }
 
+        dto.name?.let { user.name = it }
+        dto.email?.let { user.email = it }
+        dto.password?.let { user.password = it }
+
+        userRepository.save(user)
+
+        return UserResponseDTO(user.id, user.name, user.email, user.active)
+    }
+
+    fun delete(id: Long) {
+        val user = userRepository.findById(id).orElseThrow { ResourceNotFoundException("User not found") }
+        user.active = false
+        userRepository.save(user)
+    }
 }
