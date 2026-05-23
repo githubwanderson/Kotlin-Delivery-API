@@ -14,6 +14,12 @@ class UserService(private val userRepository: UserRepository) {
         return userRepository.findByActiveTrue().map { UserResponseDTO(it.id, it.name, it.email, it.active) }
     }
 
+    fun findById(id: Long): UserResponseDTO? {
+        return userRepository.findById(id)
+            .map { UserResponseDTO(it.id, it.name, it.email, it.active) }
+            .orElse(null)
+    }
+
     fun create(dto: UserRequestDTO): UserResponseDTO {
         val newUser = User(
             name = dto.name,
@@ -24,6 +30,18 @@ class UserService(private val userRepository: UserRepository) {
         var savedUser = userRepository.save(newUser)
 
         return UserResponseDTO(savedUser.id, savedUser.name, savedUser.email, savedUser.active)
+    }
+
+    fun update(id: Long, dto: UserRequestDTO): UserResponseDTO {
+        val user = userRepository.findById(id).orElseThrow { Exception("User not found") }
+
+        user.name = dto.name
+        user.email = dto.email
+        user.password = dto.password
+
+        userRepository.save(user)
+
+        return UserResponseDTO(user.id, user.name, user.email, user.active)
     }
 
 
