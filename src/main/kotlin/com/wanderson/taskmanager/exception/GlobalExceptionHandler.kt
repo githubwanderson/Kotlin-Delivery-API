@@ -19,7 +19,7 @@ class GlobalExceptionHandler {
     ): ResponseEntity<ErrorResponseDTO> {
         val body = ErrorResponseDTO(
             status = HttpStatus.CONFLICT.value(),
-            error = "Conflict",
+            error = HttpStatus.CONFLICT.reasonPhrase,
             message = "Já existe um registo com os dados fornecidos. Verifique campos únicos como o e-mail.",
             path = request.requestURI
         )
@@ -35,7 +35,7 @@ class GlobalExceptionHandler {
 
         val body = ErrorResponseDTO(
             status = HttpStatus.BAD_REQUEST.value(),
-            error = "Bad Request",
+            error = HttpStatus.BAD_REQUEST.reasonPhrase,
             message = errors,
             path = request.requestURI
         )
@@ -43,6 +43,20 @@ class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body)
     }
 
+    @ExceptionHandler(ResourceNotFoundException::class)
+    fun handleNotFoundException(
+        ex: ResourceNotFoundException,
+        request: HttpServletRequest
+    ): ResponseEntity<ErrorResponseDTO> {
+        val body = ErrorResponseDTO(
+            status = HttpStatus.NOT_FOUND.value(),
+            error = HttpStatus.NOT_FOUND.reasonPhrase,
+            message = ex.localizedMessage,
+            path = request.requestURI
+        )
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body)
+    }
 
     @ExceptionHandler(Exception::class)
     fun handleGenericException(
@@ -51,7 +65,7 @@ class GlobalExceptionHandler {
     ): ResponseEntity<ErrorResponseDTO> {
         val body = ErrorResponseDTO(
             status = HttpStatus.INTERNAL_SERVER_ERROR.value(),
-            error = "Internal Server Error",
+            error = HttpStatus.INTERNAL_SERVER_ERROR.reasonPhrase,
             message = ex.message ?: "Ocorreu um erro inesperado.",
             path = request.requestURI
         )

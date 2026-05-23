@@ -3,6 +3,7 @@ package com.wanderson.taskmanager.service
 import com.wanderson.taskmanager.dto.UserRequestDTO
 import com.wanderson.taskmanager.dto.UserResponseDTO
 import com.wanderson.taskmanager.entity.User
+import com.wanderson.taskmanager.exception.ResourceNotFoundException
 import com.wanderson.taskmanager.repository.UserRepository
 import org.springframework.stereotype.Service
 
@@ -33,7 +34,7 @@ class UserService(private val userRepository: UserRepository) {
     }
 
     fun update(id: Long, dto: UserRequestDTO): UserResponseDTO {
-        val user = userRepository.findById(id).orElseThrow { Exception("User not found") }
+        val user = userRepository.findById(id).orElseThrow { ResourceNotFoundException("User not found") }
 
         user.name = dto.name
         user.email = dto.email
